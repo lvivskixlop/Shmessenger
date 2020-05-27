@@ -18,20 +18,25 @@ namespace Shmessenger
             {
                 if (Console.KeyAvailable)
                 {
-                    Console.WriteLine("You pressed any key. It seems like you want something. What is it?\nSend Message(y) / Exit program ");
+                    Console.WriteLine("You pressed any key. It seems like you want something. What is it?\nSend Message(y)/Continiue waiting(n) ");
                     string answer = Console.ReadLine();
                     if (answer == "y")
                     {
                         sendMessage();
                     }
-                    else if (answer == "x")
+                    else if(answer == "n")
                     {
+                        Console.WriteLine("ok");
+                    }
+                    else
+                    {
+                        Console.WriteLine("YOUR ANSWER IS WRONG! GTFO!");
                         break;
                     }
                 }
             }
             recieveThread.Abort();
-
+            
         }
 
         static void sendMessage()
@@ -39,7 +44,7 @@ namespace Shmessenger
             TcpClient client = new TcpClient();
             Console.WriteLine("Input IP address you want to message to: ");
             string ipString = Console.ReadLine();
-            IPAddress recieverIP = IPAddress.Parse(ipString);
+            IPAddress recieverIP = IPAddress.Parse(ipString);            
 
             client.Connect(recieverIP, 80);
 
@@ -56,29 +61,25 @@ namespace Shmessenger
 
         static void recieveMessage()
         {
-            while (true)
+            TcpListener listener = new TcpListener(IPAddress.Any, 80);
+            listener.Start();
+            TcpClient client = listener.AcceptTcpClient();
+            NetworkStream stream = client.GetStream();
+            if (client.Connected)
             {
-                TcpListener listener = new TcpListener(IPAddress.Any, 80);
-                listener.Start();
-                TcpClient client = listener.AcceptTcpClient();
-                NetworkStream stream = client.GetStream();
-
                 byte[] recieve = new byte[2048];
                 string recievedMessage;
                 stream.Read(recieve, 0, recieve.Length);
                 recievedMessage = Encoding.ASCII.GetString(recieve).Replace("\0", string.Empty);
-                if (recievedMessage != "")
-                {
-                    Console.WriteLine($"\nYou recieved message from {client.Client.RemoteEndPoint.ToString()}:\n");
-                    Console.WriteLine(recievedMessage);
-                }
-                stream.Close();
-                client.Close();
-                listener.Stop();
+                Console.WriteLine($"You recieved message from {client.Client.RemoteEndPoint.AddressFamily}:\n");
+                Console.WriteLine(recievedMessage);
+                //stream.Close();
+                //client.Close();
+                
             }
         }//Отримання повідомлення
 
-
+        
 
     }
 }
