@@ -61,12 +61,13 @@ namespace Shmessenger
 
         static void recieveMessage()
         {
-            TcpListener listener = new TcpListener(IPAddress.Any, 80);
-            listener.Start();
-            TcpClient client = listener.AcceptTcpClient();
-            NetworkStream stream = client.GetStream();
-            while (client.Connected)
+            while (true)
             {
+                TcpListener listener = new TcpListener(IPAddress.Any, 80);
+                listener.Start();
+                TcpClient client = listener.AcceptTcpClient();
+                NetworkStream stream = client.GetStream();
+            
                 byte[] recieve = new byte[2048];
                 string recievedMessage;
                 stream.Read(recieve, 0, recieve.Length);
@@ -76,9 +77,9 @@ namespace Shmessenger
                     Console.WriteLine($"You recieved message from {client.Client.RemoteEndPoint.AddressFamily}:\n");
                     Console.WriteLine(recievedMessage);
                 }
-                //stream.Close();
-                //client.Close();
-                
+                stream.Close();
+                client.Close();
+                listener.Stop();
             }
         }//Отримання повідомлення
 
