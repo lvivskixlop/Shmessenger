@@ -73,6 +73,7 @@ namespace Shmessenger
                 recievedMessage = Encoding.ASCII.GetString(recieve).Replace("\0", string.Empty);
                 Console.WriteLine($"You recieved message from {client.Client.RemoteEndPoint.AddressFamily}:\n");
                 Console.WriteLine(recievedMessage);
+                continue;
                 stream.Close();
                 client.Close();
                 
