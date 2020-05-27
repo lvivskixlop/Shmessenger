@@ -12,26 +12,41 @@ namespace Shmessenger
     {
         static void Main(string[] args)
         {
+                        
+        }
+
+        static void sendMessage()
+        {
+            TcpClient client = new TcpClient();
+            Console.WriteLine("Input IP address you want to message to: ");
+            IPAddress recieverIP = IPAddress.Parse(Console.ReadLine());
+            client.Connect(recieverIP, 80);
+            byte[] send = new byte[2048];
+            NetworkStream stream = client.GetStream();
+            stream.Write(send, 0, send.Length);
+            stream.Close();
+            client.Close();
+        }//Надіслати повідомлення
+
+        static void recieveMessage()
+        {
             TcpListener listener = new TcpListener(IPAddress.Any, 80);
             listener.Start();
-            while (true)
+            TcpClient client = listener.AcceptTcpClient();
+            NetworkStream stream = client.GetStream();
+            while (client.Connected)
             {
-                TcpClient client = listener.AcceptTcpClient();
-                NetworkStream stream = client.GetStream();
-                while (client.Connected)
-                {
-                    byte[] recieve = new byte[2048];
-                    string recievedMessage;
-                    stream.Read(recieve, 0, recieve.Length);
-                    recievedMessage = Encoding.ASCII.GetString(recieve).Replace("\0", string.Empty);
-                    Console.WriteLine($"You recieved message from {client.Client.RemoteEndPoint.AddressFamily}:\n");
-                    Console.WriteLine(recievedMessage);
-                    client.Close();
-                }//Отримання повідомлення
-
-
+                Console.WriteLine("poop");
+                byte[] recieve = new byte[2048];
+                string recievedMessage;
+                stream.Read(recieve, 0, recieve.Length);
+                recievedMessage = Encoding.ASCII.GetString(recieve).Replace("\0", string.Empty);
+                Console.WriteLine($"You recieved message from {client.Client.RemoteEndPoint.AddressFamily}:\n");
+                Console.WriteLine(recievedMessage);
+                stream.Close();
+                client.Close();
             }
-            
-        }
+        }//Отримання повідомлення
+
     }
 }
