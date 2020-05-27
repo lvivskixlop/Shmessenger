@@ -65,17 +65,14 @@ namespace Shmessenger
             listener.Start();
             TcpClient client = listener.AcceptTcpClient();
             NetworkStream stream = client.GetStream();
-            while (client.Connected)
+            if (client.Connected)
             {
                 byte[] recieve = new byte[2048];
                 string recievedMessage;
                 stream.Read(recieve, 0, recieve.Length);
                 recievedMessage = Encoding.ASCII.GetString(recieve).Replace("\0", string.Empty);
-                if (recievedMessage != "")
-                {
-                    Console.WriteLine($"You recieved message from {client.Client.RemoteEndPoint.AddressFamily}:\n");
-                    Console.WriteLine(recievedMessage);
-                }
+                Console.WriteLine($"You recieved message from {client.Client.RemoteEndPoint.AddressFamily}:\n");
+                Console.WriteLine(recievedMessage);
                 //stream.Close();
                 //client.Close();
                 
